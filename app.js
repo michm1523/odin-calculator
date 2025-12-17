@@ -58,6 +58,7 @@ const operations = document.querySelectorAll(".operation");
 const equals = document.querySelector(".equals");
 const clear = document.querySelector(".clear");
 const decimal = document.querySelector(".decimal");
+const del = document.querySelector(".del");
 
 let currentOperation;
 let numberAvailable;
@@ -115,6 +116,19 @@ decimal.addEventListener("click", (e) => {
   if (numberAvailable && !decimalUsed) {
     display.textContent += ".";
     decimalUsed = true;
+  }
+});
+
+del.addEventListener("click", (e) => {
+  if (!justCalculated && numberAvailable) {
+    if (display.textContent.length === 1) {
+      display.textContent = 0;
+    } else {
+      display.textContent = display.textContent.substring(
+        0,
+        display.textContent.length - 1
+      );
+    }
   }
 });
 
