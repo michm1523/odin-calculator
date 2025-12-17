@@ -93,6 +93,13 @@ function processDelete() {
   }
 }
 
+function processDecimal() {
+  if (numberAvailable && !decimalUsed) {
+    display.textContent += ".";
+    decimalUsed = true;
+  }
+}
+
 function reset() {
   display.textContent = 0;
   currentOperation = null;
@@ -132,6 +139,8 @@ document.addEventListener("keydown", (e) => {
     processEquals();
   } else if (e.key === "Backspace") {
     processDelete();
+  } else if (e.key === ".") {
+    processDecimal();
   }
 });
 
@@ -149,12 +158,7 @@ operations.forEach((operation) => {
 
 equals.addEventListener("click", processEquals);
 
-decimal.addEventListener("click", (e) => {
-  if (numberAvailable && !decimalUsed) {
-    display.textContent += ".";
-    decimalUsed = true;
-  }
-});
+decimal.addEventListener("click", processDecimal);
 
 del.addEventListener("click", processDelete);
 
