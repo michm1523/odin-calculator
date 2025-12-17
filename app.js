@@ -41,8 +41,59 @@ function calculate(operator, a, b) {
   decimalUsed = false;
 }
 
+function processNumber(num) {
+  if (justCalculated) {
+    reset();
+  }
+  if (!numberAvailable) {
+    display.textContent = "";
+  }
+  if (display.textContent == "0") {
+    display.textContent = num;
+  } else {
+    display.textContent += num;
+  }
+  numberAvailable = true;
+}
+
+function processOperation(operation) {
+  if (!num1) {
+    num1 = parseFloat(display.textContent);
+  } else if (!num2 && numberAvailable) {
+    num2 = parseFloat(display.textContent);
+    calculate(currentOperation, num1, num2);
+    num1 = parseFloat(display.textContent);
+  }
+
+  currentOperation = operation;
+  numberAvailable = false;
+  decimalUsed = false;
+  justCalculated = false;
+}
+
+function processEquals() {
+  if (num1 && currentOperation) {
+    if (!num2 && numberAvailable) {
+      num2 = parseFloat(display.textContent);
+      calculate(currentOperation, num1, num2);
+    }
+  }
+}
+
+function processDelete() {
+  if (!justCalculated && numberAvailable) {
+    if (display.textContent.length === 1) {
+      display.textContent = 0;
+    } else {
+      display.textContent = display.textContent.substring(
+        0,
+        display.textContent.length - 1
+      );
+    }
+  }
+}
+
 function reset() {
-  console.log("hi");
   display.textContent = 0;
   currentOperation = null;
   numberAvailable = true;
@@ -69,48 +120,34 @@ let justCalculated;
 
 reset();
 
+document.addEventListener("keydown", (e) => {
+  e.preventDefault();
+  let nums = "0123456789";
+  let operations = "+-*/";
+  if (nums.indexOf(e.key) != -1) {
+    processNumber(e.key);
+  } else if (operations.indexOf(e.key) != -1) {
+    processOperation(e.key);
+  } else if (e.key === "=" || e.key === "Enter") {
+    processEquals();
+  } else if (e.key === "Backspace") {
+    processDelete();
+  }
+});
+
 numbers.forEach((number) => {
   number.addEventListener("click", (e) => {
-    if (justCalculated) {
-      reset();
-    }
-    if (!numberAvailable) {
-      display.textContent = "";
-    }
-    if (display.textContent == "0") {
-      display.textContent = e.target.textContent;
-    } else {
-      display.textContent += e.target.textContent;
-    }
-    numberAvailable = true;
+    processNumber(e.target.textContent);
   });
 });
 
 operations.forEach((operation) => {
   operation.addEventListener("click", (e) => {
-    if (!num1) {
-      num1 = parseFloat(display.textContent);
-    } else if (!num2 && numberAvailable) {
-      num2 = parseFloat(display.textContent);
-      calculate(currentOperation, num1, num2);
-      num1 = parseFloat(display.textContent);
-    }
-
-    currentOperation = e.target.textContent;
-    numberAvailable = false;
-    decimalUsed = false;
-    justCalculated = false;
+    processOperation(e.target.textContent);
   });
 });
 
-equals.addEventListener("click", (e) => {
-  if (num1 && currentOperation) {
-    if (!num2 && numberAvailable) {
-      num2 = parseFloat(display.textContent);
-      calculate(currentOperation, num1, num2);
-    }
-  }
-});
+equals.addEventListener("click", processEquals);
 
 decimal.addEventListener("click", (e) => {
   if (numberAvailable && !decimalUsed) {
@@ -119,17 +156,6 @@ decimal.addEventListener("click", (e) => {
   }
 });
 
-del.addEventListener("click", (e) => {
-  if (!justCalculated && numberAvailable) {
-    if (display.textContent.length === 1) {
-      display.textContent = 0;
-    } else {
-      display.textContent = display.textContent.substring(
-        0,
-        display.textContent.length - 1
-      );
-    }
-  }
-});
+del.addEventListener("click", processDelete);
 
 clear.addEventListener("click", reset);
